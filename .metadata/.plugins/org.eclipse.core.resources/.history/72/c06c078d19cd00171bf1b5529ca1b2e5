@@ -1,0 +1,44 @@
+package lab.pages;
+
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+
+import logger.MainLogger;
+
+
+/**
+ * Class represents Inbox page.
+ * 
+ * @author AlexanderK
+ * 
+ */
+public class InboxPage extends AbstractPage{
+
+	/**
+	 * Login
+	 */
+	@FindBy(name = "Login")
+	public WebElement edt_userName;
+
+	/**
+	 * Password
+	 */
+	@FindBy(name = "Password")
+	public WebElement edt_password;
+
+	/**
+	 * Log In button
+	 */
+	@FindBy(id = "mailbox__auth__button")
+	public WebElement btn_Login;
+
+	
+	public InboxPage(WebDriver driver) {
+		super(driver);
+		verifyOpened("Входящие1");
+	}
+
+}
+

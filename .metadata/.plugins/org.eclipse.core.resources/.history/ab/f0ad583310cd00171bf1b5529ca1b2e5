@@ -1,0 +1,93 @@
+package lab.qa;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+
+import logger.MainLogger;
+
+
+/**
+ * Class represents Log In page. While initialized is checked to have proper URL
+ * performs various log in actions and represents LogIn page
+ * 
+ * @author AlexanderK
+ * 
+ */
+public class LoginPage extends AbstractPage{
+
+	/**
+	 * Login
+	 */
+	@FindBy(name = "username")
+	public WebElement edt_userName;
+
+	/**
+	 * Password
+	 */
+	@FindBy(name = "password")
+	public WebElement edt_password;
+
+	/**
+	 * Log In button
+	 */
+	@FindBy(className = "login-button")
+	public WebElement btn_Login;
+	/**
+	 * Log In Error message
+	 */
+	
+	@FindBy(className = "login-message")
+	public WebElement st_ErrMsg;
+
+	public LoginPage(WebDriver driver) {
+		super(driver);
+		verifyOpened("XEServer Manager : Login Page");
+	}
+
+	/**
+	 * Performs log in XESManager.
+	 */
+	private void logIn(String f_sName, String f_sPwd) {
+		try {
+			edt_userName.sendKeys(f_sName);
+			edt_password.sendKeys(f_sPwd);
+			btn_Login.click();
+		} catch (NoSuchElementException e) {
+			MainLogger.getInstance().error(
+					"Cannot log in. Check edits and LogIn button availability",
+					true);
+		}
+	}
+
+	/**
+	 * Performs successful log in with default credentials..
+	 */
+	public void logInDefault() {
+		logIn("admin", "admin");
+	}
+
+	/**
+	 * Performs FAILED log in with provided credentials. Verifies
+	 * error message and closes dialog
+	 */
+	public LoginPage logInError(final String sName, final String sPwd,
+			final String sErrMsg) {
+		logIn(sName, sPwd);
+		if (!st_ErrMsg.isDisplayed())
+			MainLogger.getInstance().error("Error message is not present",
+					false);
+
+		if (!st_ErrMsg.getText().contains(sErrMsg))
+			MainLogger.getInstance().error(
+					String.format(
+							"Error message should contain %s. Observed: .",
+							sErrMsg, st_ErrMsg.getText()), false);
+
+		return this;
+	}
+
+}
+

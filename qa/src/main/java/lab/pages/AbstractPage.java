@@ -1,0 +1,50 @@
+package lab.pages;
+
+
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import lab.qa.Constants;
+import logger.MainLogger;
+
+
+/**
+ * Basic class with common functionality for pages
+ * 
+ * @author AlexanderK
+ */
+public class AbstractPage {
+
+	public WebDriver driver;
+
+	/**
+	 * Return a page, checking its title
+	 * 
+	 * @param driver
+	 *            : webdriver
+	 * @param f_sTittle
+	 *            : string to be contained in the page title
+	 */
+	public AbstractPage(WebDriver driver) {
+		PageFactory.initElements(driver, this);
+		this.driver = driver;
+	}
+
+	public void verifyOpened(final String sTitle) {
+		try {
+			WebDriverWait _wait = new WebDriverWait(driver, Constants.iImplicitTimeout, 200);
+			_wait.until(ExpectedConditions.titleContains(sTitle));
+		} catch (TimeoutException e) {
+			MainLogger.getInstance().error(
+					String.format(
+							"Page not opened. Expected: %s. Observed: %s",
+							sTitle, driver.getTitle()), true);
+		}
+	}
+
+}

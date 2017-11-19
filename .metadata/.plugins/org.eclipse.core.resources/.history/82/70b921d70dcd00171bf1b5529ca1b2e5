@@ -1,0 +1,5 @@
+package lab.qa;
+
+public class AbstractPage {
+
+}

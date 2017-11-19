@@ -1,0 +1,65 @@
+package lab.pages;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.FindBys;
+
+import Commons.JSActions;
+import logger.MainLogger;
+
+/**
+ * Class represents Compose page.
+ * 
+ * @author AlexanderK
+ * 
+ */
+public class ComposePage extends AbstractPage{
+
+	@FindBy(css = "a[href*='compose']")
+	public WebElement btnInbox;
+	
+	@FindBys({@FindBy(css = "textarea[data-original-name*='To']"), @FindBy(xpath = "./..")})
+	public WebElement edtTo;
+	
+	
+	@FindBy(css = "textarea[data-original-name*='To']")
+	public WebElement edtTo1;
+	
+	@FindBy(name = "Subject")
+	public WebElement edtSubject;
+	
+	@FindBy(css = "#tinymce > br")
+	public WebElement edtBody;
+	
+	public ComposePage(WebDriver driver) {
+		super(driver);
+		try {
+			JSActions.jsScrollTo(By.cssSelector("a[href*='compose']"), driver);
+			btnInbox.click();
+		} catch (NoSuchElementException e) {
+			MainLogger.getInstance().error(
+					"Button Compose is not found", true);
+		}
+
+		verifyOpened("Новое");
+	}
+
+	public void compose(String to, String subject, String body) {
+		try {
+//			edtTo.clear();
+			edtTo1.findElement(By.xpath("./..")).click();
+			edtTo1.sendKeys(to);
+		/*  edtSubject.sendKeys(subject);
+			edtBody.sendKeys(body);
+		*/
+		} catch (NoSuchElementException e) {
+			MainLogger.getInstance().error(
+					"Field To, Subject or Body is not found", true);
+		}
+
+	}
+	
+}

@@ -1,0 +1,85 @@
+package lab.pages;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.UnhandledAlertException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.FindBys;
+
+import Commons.JSActions;
+import logger.MainLogger;
+
+/**
+ * Class represents Compose page.
+ * 
+ * @author AlexanderK
+ * 
+ */
+public class ComposePage extends AbstractPage{
+
+	@FindBy(css = "a[href*='compose']")
+	public WebElement btnInbox;
+	
+	@FindBy(css = "textarea[data-original-name*='To']")
+	public WebElement edtTo;
+	
+	@FindBy(name = "Subject")
+	public WebElement edtSubject;
+	
+	@FindBy(css = "div[title*=Отправить]")
+	public WebElement btnSend;
+	
+	public ComposePage(WebDriver driver) {
+		super(driver);
+		try {
+			JSActions.jsScrollTo(By.cssSelector("a[href*='compose']"), driver);
+			btnInbox.click();
+		} catch (NoSuchElementException e) {
+			MainLogger.getInstance().error(
+					"Button Compose is not found", true);
+		}
+
+		verifyOpened("Новое");
+	}
+
+	public void compose(String to, String subject, String body) {
+		try {
+			driver.switchTo().frame(driver.findElement(By.cssSelector("iframe[name*='composeEditor_ifr_name']")));
+			driver.switchTo().activeElement().sendKeys(body);;
+			driver.switchTo().defaultContent();
+
+			edtTo.findElement(By.xpath("./..")).click();
+			edtTo.findElement(By.xpath("./..")).sendKeys(Keys.ESCAPE);;
+			edtTo.clear();
+			edtTo.sendKeys(to);
+			edtSubject.sendKeys(subject);
+		
+		} catch (NoSuchElementException e) {
+			MainLogger.getInstance().error(
+					"Field To, Subject or Body is not found", true);
+		}
+
+	}
+	
+	public void send(String to, String subject, String body) {
+		compose(to, subject, body);
+		
+		try{
+			btnSend.click();
+		}catch(UnhandledAlertException e ){
+		    driver.switchTo().alert().dismiss();
+		}
+		try {
+			btnSend.click();
+		} catch (NoSuchElementException e) {
+			MainLogger.getInstance().error(
+					"Button Send is not found", true);
+		}
+		
+	}
+	
+}

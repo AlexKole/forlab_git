@@ -1,0 +1,68 @@
+package lab.pages;
+
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+
+import logger.MainLogger;
+
+
+/**
+ * Class represents Inbox page.
+ * 
+ * @author AlexanderK
+ * 
+ */
+public class Inbox extends AbstractPage{
+
+	/**
+	 * Login
+	 */
+	@FindBy(name = "Login")
+	public WebElement edt_userName;
+
+	/**
+	 * Password
+	 */
+	@FindBy(name = "Password")
+	public WebElement edt_password;
+
+	/**
+	 * Log In button
+	 */
+	@FindBy(id = "mailbox__auth__button")
+	public WebElement btn_Login;
+
+	
+	public LoginPage(WebDriver driver) {
+		super(driver);
+		verifyOpened("Mail.Ru:");
+	}
+
+	/**
+	 * Performs log in.
+	 */
+	public void logIn(String f_sName, String f_sPwd) {
+		try {
+			edt_userName.clear();
+			edt_userName.sendKeys(f_sName);
+			edt_password.clear();
+			edt_password.sendKeys(f_sPwd);
+			btn_Login.click();
+		} catch (NoSuchElementException e) {
+			MainLogger.getInstance().error(
+					"Cannot log in. Check edits and LogIn button availability",
+					true);
+		}
+	}
+
+	/**
+	 * Performs successful log in with default credentials..
+	 */
+	public void logInDefault() {
+		logIn("testselqa", "qwerty1.");
+	}
+
+}
+

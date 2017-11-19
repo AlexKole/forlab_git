@@ -1,0 +1,142 @@
+package lab.qa;
+
+import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
+
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.Test;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.ie.InternetExplorerDriver;
+
+import logger.MainLogger;
+
+
+public class AppTest {
+
+	@Rule
+
+	private WebDriver driver, driver1;
+	private LogInPage logIn;
+	private String baseUrl;
+	private MainLogger log;
+
+	@BeforeClass
+	public static void setUpSuite() {
+		MainLogger log = MainLogger.getInstance();
+		log.setFileHandler("prep_Tests_Suite.xml");
+		log.suiteIn("Preparation Suite. Runs tests under development");
+		/*
+		 * AgentService agent = new AgentService(); agent.startAgent();
+		 * XESManagerService xesm = new XESManagerService();
+		 * xesm.startManager();
+		 */
+	}
+
+	@AfterClass
+	public static void exitSuite() {
+		MainLogger.getInstance().suiteOut();
+		/*
+		 * AgentService agent = new AgentService(); agent.stopAgent();
+		 * XESManagerService xesm = new XESManagerService(); xesm.stopManager();
+		 */
+	}
+
+	@Before
+	public void setUp() throws Exception {
+		/*
+		 * DesiredCapabilities ieCapabilities =
+		 * DesiredCapabilities.internetExplorer();
+		 * ieCapabilities.setCapability(InternetExplorerDriver
+		 * .REQUIRE_WINDOW_FOCUS, true);
+		 */
+		log = MainLogger.getInstance();
+		driver = new InternetExplorerDriver();
+		driver.manage().timeouts()
+				.implicitlyWait(Constants.iImplicitTimeout, TimeUnit.SECONDS);
+		baseUrl = "https://localhost:5643";
+	}
+
+	@Test
+	// @Repeat( times = 5 )
+	public void ATC_01_Agent_Setup_Validation() throws Exception {
+		DBConnectionSettings settings = new Constants.DBConnectionSettings(String.format("ATC_Batcher_%s.properties", "Oracle"));
+		MainWindow mainwin = new MainWindow(driver, baseUrl);
+		
+		ArrayList<ConfigurationTabRec> rConfigurationSettings = new ArrayList<ConfigurationTabRec>();
+		rConfigurationSettings.add((ConfigurationTabRec) AbstractRecord.setFromDump("Batcher/ConfigurationTab/ATC_02_Batcher_ConfigurationTab_00",ConfigurationTabRec.class));
+		rConfigurationSettings.get(0).cConfigurationName.edt_Name = null;
+		rConfigurationSettings.get(0).cConfigurationSettings.edt_ConnectionURL = settings.url;
+		rConfigurationSettings.get(0).cConfigurationSettings.edt_Password = settings.password;
+		rConfigurationSettings.get(0).cConfigurationSettings.edt_Login = settings.user;
+
+		log.stepIn("Step_3. Select 'batcher' configuration from list, load configuration.","Configuration is loaded");
+		for(int i = 0; i < 100; i++){
+		mainwin.openPage(ControllerPage.class);
+		BatcherPage batcherPage = (BatcherPage) mainwin.openPage(BatcherPage.class);
+		batcherPage.tab_ConfigurationTab.fillConfiguration(rConfigurationSettings.get(0));
+		batcherPage.loadConfiguration("Actuality date: ");
+		//driver.navigate().refresh();
+		}
+		log.stepOut();
+		
+/*		WebElement el = driver.findElement(By.xpath("//tr/td[contains(.,\"channel1\")]/../td[contains(.,\"1\")]/../td[contains(.,\"Expired\")]/../td[contains(.,\"Not reported\")]/../td[contains(.,\"1\")]/../td[contains(.,\"523\")]/../td[last()]//img"));
+		el.click();
+		el.click();
+/*		log.testIn("ATC_01_Agent_Setup_Validation. Veifies smth");
+		MainWindow mainwin = new MainWindow(driver, baseUrl);
+//		AlertMonitor pAlertsMonitor = (AlertMonitor) mainwin.openPage(AlertMonitor.class);
+
+		log.stepIn("Step_0. Initial conditions: Create agent record: 1 with default values, 2 with non-default values, 3 for filling purposes");
+		MainLogger.getInstance().error("Fail1", false);
+		log.stepOut();
+		
+		log.stepIn("Step_1. Initial conditions: Create agent record: 1 with default values, 2 with non-default values, 3 for filling purposes");
+		MainLogger.getInstance().error("Fail1", false);
+		log.stepOut();
+
+		MainWindow mainwin = new MainWindow(driver, baseUrl);
+		SetupAlertPage pRules = (SetupAlertPage) mainwin.openPage(SetupAlertPage.class);
+		GeneralDetails GD = pRules.CreateAlertRule();
+		GD.edt_Name.set("test");
+		WebElement el = driver.findElement(By.xpath("//span[@class=\"x-btn-inner x-btn-inner-center\"][contains(.,'Next >')]"));
+		System.out.println(el.getAttribute("id"));
+		System.out.println(el.getAttribute("class"));
+		System.out.println(el.getTagName());
+		
+//		GD.ClickNext();//.lst_SourceType.set("Route");
+		el.click();
+		//Thread.sleep(2000);
+
+		
+		
+		/*By[] bys = {By.cssSelector("div:not([style*='display: none']) div#col-1-innerCt > div"), By.cssSelector("label")};
+		List <WebElement> list = driver.findElements(By.cssSelector("#col-1-innerCt tbody tr label"));
+		List <WebElement> elems = null; //= driver.findElements(By.cssSelector("#col-1-innerCt tbody tr"));
+		for (By by : bys) {
+			      List<WebElement> newElems = new ArrayList<WebElement>();
+			      if (elems == null) {
+			        newElems.addAll(by.findElements(driver));
+			      } else {
+			        for (WebElement elem : elems) {
+			          newElems.addAll(elem.findElements(by));
+			          System.out.println(elem.getAttribute("id"));
+			          System.out.println(elem.findElement(by).getAttribute("id"));
+			        }
+			      }
+			      elems = newElems;
+			    }
+		*/
+
+	}
+
+	@After
+	public void tearDown() throws Exception {
+		log.testOut();
+		driver.quit();
+	}
+}
+

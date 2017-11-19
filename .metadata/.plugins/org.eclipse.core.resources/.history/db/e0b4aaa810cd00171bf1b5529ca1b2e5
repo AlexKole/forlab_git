@@ -1,0 +1,98 @@
+package ManagementTool;
+
+import java.lang.reflect.InvocationTargetException;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import Commons.AbstractWindow;
+import Commons.extendedControls.ExtendedPageFactory;
+import Commons.logger.MainLogger;
+import ManagementTool.pages.AbstractPage;
+import ManagementTool.pages.Login.LoginPage;
+
+/**
+ * Class represents Main Window common actions and controls
+ * 
+ * @author AlexanderK
+ * 
+ */
+public class MainWindow extends AbstractWindow {
+
+	// private WebDriver driver;
+	/**
+	 * Window title
+	 */
+	public String sTitle;
+
+	public AbstractPage CurrentPage;
+
+	/**
+	 * Creates instance of MainWindow and verifies proper window title
+	 * 
+	 * @param driver
+	 *            - webdriver
+	 */
+	public MainWindow(WebDriver driver, String url) {
+		super(driver, url);
+		sTitle = "XEServer Manager : System Monitoring";
+		LoginPage login = new LoginPage(driver);
+		login.logInDefault();
+		try {
+			WebDriverWait _wait = new WebDriverWait(driver, 30, 500);
+			_wait.until(ExpectedConditions.titleContains(sTitle));
+		} catch (TimeoutException e) {
+			MainLogger.getInstance().error(
+					String.format(
+							"Window not opened. Expected: %s. Observed: %s",
+							sTitle, driver.getTitle()), true);
+		}
+		ExtendedPageFactory.initElements(driver, this);
+		this.driver = driver;
+
+	}
+
+	// Methods
+
+	/**
+	 * Method opens page by provided page class
+	 * 
+	 * @param sPage
+	 *            : Openning page
+	 */
+	public AbstractPage openPage(Class cPage) {
+
+		try {
+			CurrentPage = (AbstractPage) cPage.getDeclaredConstructor(
+					WebDriver.class).newInstance(driver);
+		} catch (InstantiationException | IllegalAccessException
+				| IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return CurrentPage;
+	}
+	
+	public AbstractPage openPage(Class cPage, String xPathToExpectedElement, int intTimeOut) {
+
+		try {
+			CurrentPage = (AbstractPage) cPage.getDeclaredConstructor(
+					WebDriver.class).newInstance(driver);
+			WebElement element = (new WebDriverWait(driver, intTimeOut)).until(ExpectedConditions.elementToBeClickable(By.xpath(xPathToExpectedElement)));
+		} catch (InstantiationException | IllegalAccessException
+				| IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (TimeoutException e){
+			MainLogger.getInstance().error(String.format("Element %s not found on the page", xPathToExpectedElement), true);
+		}
+		return CurrentPage;
+	}
+
+}
