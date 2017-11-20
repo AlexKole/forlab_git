@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?><testrun name="AppTest" project="qa" tests="1" started="1" failures="0" errors="0" ignored="0">
-  <testsuite name="lab.qa.AppTest" time="28.316">
-    <testcase name="ATC_01_SendEmail" classname="lab.qa.AppTest" time="28.316"/>
-  </testsuite>
-</testrun>

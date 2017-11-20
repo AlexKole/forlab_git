@@ -18,7 +18,6 @@ import logger.MainLogger;
 public class AppTest {
 
 	private WebDriver driver, driver1;
-	private String baseUrl;
 	private MainLogger log;
 
 	@BeforeClass
@@ -40,14 +39,13 @@ public class AppTest {
 		driver = new InternetExplorerDriver();
 		driver.manage().timeouts()
 				.implicitlyWait(Constants.iImplicitTimeout, TimeUnit.SECONDS);
-		baseUrl = "https://mail.ru";
 	}
 
 	@Test
 	public void ATC_01_SendEmail() throws Exception {
 		log.testIn("Test1. Log in and send");
 		log.stepIn("Step_1. Log in");
-			MainWindow mainwin = new MainWindow(driver, baseUrl);
+			MainWindow mainwin = new MainWindow(driver,  Constants.sBaseUrl);
 		log.stepOut();
 		
 		log.stepIn("Step_2. Open Compose page");
